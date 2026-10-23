@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/xxx-client/client.js";
 
@@ -10,9 +9,11 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is missing");
 }
 
-const ca = readFileSync(
-  resolve(process.cwd(), "certs", "aiven-ca.pem"),
-  "utf8",
+const ca = readFileSync("/etc/secrets/aiven-ca.pem", "utf8");
+
+console.log(
+  "Aiven CA certificate loaded:",
+  ca.startsWith("-----BEGIN CERTIFICATE-----"),
 );
 
 const adapter = new PrismaPg({
