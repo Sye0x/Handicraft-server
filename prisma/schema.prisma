@@ -13,16 +13,16 @@ datasource db {
 }
 
 enum Role {
-  CUSTOMER
   ADMIN
+  PM
+  SM
 }
 
-model User { 
-  id    Int     @id @default(autoincrement()) 
-  email String  @unique
-  phone String
-  name  String?
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  phone    String
+  name     String?
   password String
-  address String
-  role Role @default(ADMIN)
+  role     Role   @default(SM)
 }

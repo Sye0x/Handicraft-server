@@ -2,7 +2,12 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import { prisma } from "../lib/prisma.js";
+import {
+  PrismaClient,
+  Role,
+} from "../node_modules/@prisma/xxx-client/client.js";
+
+const prisma = new PrismaClient();
 
 const cookieOptions = {
   httpOnly: true,
@@ -28,18 +33,16 @@ const generateToken = (user: any) => {
 //
 export const register = async (req: any, res: any) => {
   try {
-    const { name, email, phone, address, password } = req.body;
+    const { name, email, phone, password } = req.body;
 
     // Validation
-    if (!name || !email || !phone || !address || !password) {
+    if (!name || !email || !phone || !password) {
       return res.status(400).json({
         message: "All fields are required",
       });
     }
 
     const userExists = await prisma.user.findUnique({ where: { email } });
-
-    // const userExists = await User.findOne({ email });
 
     if (userExists) {
       return res.status(400).json({
@@ -53,9 +56,9 @@ export const register = async (req: any, res: any) => {
       data: {
         name,
         email,
-        address,
+        password,
         phone,
-        password: hashedPassword,
+        role: Role.PM,
       },
     });
 
@@ -113,14 +116,13 @@ export const login = async (req: any, res: any) => {
 
     // Save cookie
     res.cookie("token", token, cookieOptions);
-    res.json({
+    res.status(200).json({
       message: "Login successful",
-      user: {
+      data: {
         id: user.id,
         name: user.name,
         email: user.email,
         phone: user.phone,
-        address: user.address,
         role: user.role,
       },
     });
